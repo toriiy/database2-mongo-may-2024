@@ -1,0 +1,41 @@
+use test
+
+db.users.find()
+
+db.users.find({
+    age:{$lt:20}
+})
+
+db.users.find({
+    $or:[
+        {parents:'Tamara'},
+        {parents:'Petro'}
+    ]
+})
+
+db.users.find({studying:'js'})
+
+db.users.updateMany(
+    {studying:{$size:1}},
+    {$push:{studying:'java'}}
+)
+
+db.users.find({
+   $and:[
+       {"address.house":{$gte:1}},
+       {"address.house":{$lte:20}}
+   ]
+})
+
+db.users.find({"address.street":/ /})
+
+db.users.deleteMany({studying:{$exists:0}})
+
+db.users.find({parents:/na$/i})
+
+db.users.updateMany(
+    {studying:{$ne:'python'}},
+    {$push:{studying: 'python'}}
+)
+
+db.users.find().sort({rating:-1, "address.flat":-1})
