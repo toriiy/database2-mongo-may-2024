@@ -1,0 +1,110 @@
+use test
+
+db.students.find()
+
+db.students.find({avgScore: 4.2})
+
+db.students.find({class: 1})
+
+db.students.find({lessons: 'physics'})
+
+db.students.find({'parents.profession': 'scientist'})
+
+db.students.find({avgScore: {$gt: 4}})
+
+db.students.find().sort({avgScore: -1}).limit(1)
+
+db.students.find().sort({avgScore: 1}).limit(1)
+
+db.students.find().sort({avgScore: -1}).limit(3)
+
+db.students.aggregate([
+    {
+        $group: {
+            _id: 0,
+            avgSchool: {$avg: '$avgScore'}
+        }
+    }
+])
+
+db.students.aggregate([
+    {
+        $match: {
+            $or: [
+                {lessons: 'physics'},
+                {lessons: 'mathematics'}
+            ]
+        }
+    },
+    {
+        $group: {
+            _id: 0,
+            avg: {$avg: '$avgScore'}
+        }
+    }
+])
+
+db.students.aggregate([
+    {
+        $match: {class: 2}
+    },
+    {
+        $group: {
+            _id: 0,
+            avgClass2: {$avg: '$avgScore'}
+        }
+    }
+])
+
+db.students.find({
+    $or: [
+        {parents: {$exists: 0}},
+        {parents: {$size: 1}}
+    ]
+})
+
+db.students.find({
+    $and: [
+        {parents: {$exists: 1}},
+        {"parents.profession": null}
+    ]
+})
+
+db.students.deleteMany(
+    {avgScore: {$lt: 2.5}}
+)
+
+db.students.updateMany(
+    {"parents.profession": 'teacher'},
+    {$set: {avgScore: 5}}
+)
+
+db.students.find({
+    $and: [
+        {class: {$lt: 5}},
+        {lessons: 'physics'}
+    ]
+})
+
+db.students.aggregate([
+    {
+        $group: {
+            _id: '$class',
+            avgScoreClass: {$avg: '$avgScore'}
+        }
+    },
+    {
+        $sort: {avgScoreClass: -1}
+    },
+
+    {
+        $limit: 1
+    },
+    {
+        $project: {
+            theMostSuccessfulClass: '$_id',
+            _id: 0,
+            avgScoreClass: 1
+        }
+    }
+])
